@@ -15,7 +15,6 @@ pip install -r requirements.txt
 ```
 python main.py
 ```
-### Создание описания
 ### Автор
 Артём Карташян
 #### (https://github.com/yhtrg)
