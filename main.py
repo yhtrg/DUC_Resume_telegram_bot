@@ -161,9 +161,7 @@ async def handle_document(message: types.Message):
     await bot.download_file(input_file.file_path, input_file_path)
     await message.reply("Документ получен! Обрабатываю файл...")
     response = process_document(input_file_path)
-    print(response)
     output_flowise = query({"question": response})
-    print(output_flowise)
     data = output_flowise['text'][7:-3]
     data = json.loads(data)
     output_file_name = download_word(data)
