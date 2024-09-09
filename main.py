@@ -31,7 +31,6 @@ def query(payload):
     return response.json()
 
 def download_word(data):
-
     doc = DocxDocument('resume.docx')
 
     for paragraph in doc.paragraphs:
@@ -135,6 +134,12 @@ def process_document(file_path):
         doc = DocxDocument(file_path)
         for paragraph in doc.paragraphs:
             response += paragraph.text + '\n'
+
+        if doc.tables:
+            for table in doc.tables:
+                for row in table.rows:
+                    row_text = [cell.text for cell in row.cells]
+                    response += ' '.join(row_text)
 
     elif '.rtf' in file_path:
         with open(file_path) as infile:
