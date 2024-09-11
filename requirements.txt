@@ -5,3 +5,4 @@ spire==0.4.2
 Spire.Doc==12.7.1
 striprtf==0.0.26
 textract==1.6.5
+pypdf2==3.0.1
