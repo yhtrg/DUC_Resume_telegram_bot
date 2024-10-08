@@ -116,6 +116,12 @@ def download_word(data):
         if 'Образование' in paragraph.text:
             run = paragraph.runs[0]
             for edu in data['education']:
+                if edu['university'] is None:
+                    edu['university'] == '[Университет]'
+                if edu['faculty'] is None:
+                    edu['faculty'] == '[Факультет]'
+                if edu['specialty'] is None:
+                    edu['specialty'] == '[Специальность]'
                 run = paragraph.add_run(f"\n- {edu['year']}, {edu['university']}, {edu['faculty']}, {edu['specialty']};")
                 run.font.size = Pt(12)
                 run.font.name = 'Times New Roman'
