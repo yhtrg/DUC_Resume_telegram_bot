@@ -98,10 +98,13 @@ def download_word(data):
             for experience in data['work_experience']:
                 row_cells = table.add_row().cells
                 row_cells[0].text = f"{experience['start_date']} - {experience['end_date']}"
-                functions = ''
-                for func in experience['function']:
-                    functions += f'\n{func}' 
-                row_cells[1].text = f"{experience['current_position']}\n{functions}"
+                if isinstance(experience['function'], list):
+                    functions = ''
+                    for func in experience['function']:
+                        functions += f'\n{func}'
+                    row_cells[1].text = f"{experience['current_position']}\n{functions}"
+                elif isinstance(experience['function', str]):
+                    row_cells[1].text = f"{experience['current_position']}\n\n{experience['function']}"
                 
             for row in table.rows:
                 for cell in row.cells:
