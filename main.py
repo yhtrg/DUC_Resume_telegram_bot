@@ -18,9 +18,8 @@ from spire.doc.common import *
 logging.basicConfig(level=logging.INFO)
 
 encoding = 'UTF-8'
-API_URL = "http://178.212.132.7:3000/api/v1/prediction/be2c5a05-e4b4-4a33-837d-de5c4d43b125"
-#TOKEN = '7096081921:AAHX23mpdT1pe4yZJfzBxnNM10xroSkB8HI'
-TOKEN = '7266662655:AAG5CUk3OSiylrlM6QfD_XiL4yeGB7o8AjQ'
+API_URL = "http://178.212.132.7:3003/api/v1/prediction/914536a7-cb64-4504-afab-4d09c557e524"
+TOKEN = '7096081921:AAHX23mpdT1pe4yZJfzBxnNM10xroSkB8HI'
 
 DOWNLOAD_FOLDER = 'downloads'
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
@@ -74,7 +73,16 @@ def download_word(data):
 
         if '[Список технологий]' in paragraph.text:
             run = paragraph.runs[0]
-            run.text = run.text.replace('[Список технологий]', (data['tech_stack']))
+            tech_stack = ''
+            current_tech_stack = 1
+            for stack in data['tech_stack']:
+                tech_stack_len = len(data['tech_stack'])
+                if current_tech_stack != tech_stack_len:
+                    tech_stack += f'{stack}, '
+                    current_tech_stack += 1
+                else:
+                    tech_stack += f'{stack}.'
+            run.text = run.text.replace('[Список технологий]', tech_stack)
             run.font.size = Pt(12)
             run.font.name = 'Times New Roman'
 
@@ -173,8 +181,10 @@ async def handle_document(message: types.Message):
     response = process_document(input_file_path)
     print(response)
     output_flowise = query({"question": response})
-    data = output_flowise['text'][7:-3]
-    data = json.loads(data)
+    if '```json' in output_flowise['text']:
+        data = json.loads(output_flowise['text'][7:-3])
+    else:
+        data = json.loads(output_flowise['text'])
     print(data)
     output_file_name = download_word(data)
     output_document = FSInputFile(f'downloads/{output_file_name}')
