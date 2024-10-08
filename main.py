@@ -98,7 +98,10 @@ def download_word(data):
             for experience in data['work_experience']:
                 row_cells = table.add_row().cells
                 row_cells[0].text = f"{experience['start_date']} - {experience['end_date']}"
-                row_cells[1].text = f"{experience['current_position']}\n\n{experience['function']}"
+                functions = ''
+                for func in experience['function']:
+                    functions += f'\n{func}' 
+                row_cells[1].text = f"{experience['current_position']}\n{functions}"
                 
             for row in table.rows:
                 for cell in row.cells:
@@ -108,6 +111,7 @@ def download_word(data):
                             font = run.font
                             font.size= Pt(12)
                             font.name = 'Times New Roman'
+
 
         if 'Образование' in paragraph.text:
             run = paragraph.runs[0]
