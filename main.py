@@ -20,7 +20,6 @@ logging.basicConfig(level=logging.INFO)
 encoding = 'UTF-8'
 API_URL = "http://178.212.132.7:3003/api/v1/prediction/914536a7-cb64-4504-afab-4d09c557e524"
 TOKEN = '7096081921:AAHX23mpdT1pe4yZJfzBxnNM10xroSkB8HI'
-
 DOWNLOAD_FOLDER = 'downloads'
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
@@ -103,7 +102,7 @@ def download_word(data):
                     for func in experience['function']:
                         functions += f'\n{func}'
                     row_cells[1].text = f"{experience['current_position']}\n{functions}"
-                elif isinstance(experience['function', str]):
+                elif isinstance(experience['function'], str):
                     row_cells[1].text = f"{experience['current_position']}\n\n{experience['function']}"
                 
             for row in table.rows:
