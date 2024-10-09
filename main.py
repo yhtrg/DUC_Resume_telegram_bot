@@ -19,6 +19,7 @@ logging.basicConfig(level=logging.INFO)
 
 encoding = 'UTF-8'
 API_URL = "http://178.212.132.7:3003/api/v1/prediction/914536a7-cb64-4504-afab-4d09c557e524"
+API_URL_SPACES = "http://178.212.132.7:3003/api/v1/prediction/3a8b3a53-84b6-4551-8127-7162ca12cb64"
 TOKEN = '7096081921:AAHX23mpdT1pe4yZJfzBxnNM10xroSkB8HI'
 DOWNLOAD_FOLDER = 'downloads'
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
@@ -29,6 +30,16 @@ bot = Bot(token=TOKEN)
 def query(payload):
     response = requests.post(API_URL, json=payload)
     return response.json()
+
+def query_spaces(payload):
+    response = requests.post(API_URL_SPACES, json=payload)
+    return response.json()
+
+def find_spaces(text):
+    space_count = text.count(' ')
+    char_count = len(text) - space_count
+    
+    return char_count, space_count
 
 def download_word(data):
     doc = DocxDocument('resume.docx')
@@ -192,7 +203,12 @@ async def handle_document(message: types.Message):
     await message.reply("Документ получен! Обрабатываю файл...")
     response = process_document(input_file_path)
     print(response)
-    output_flowise = query({"question": response})
+    char_count, space_count = find_spaces(response)
+    if (space_count * 100)/(char_count + space_count) >= 20:
+        response.replace(' ', '')
+        response = query_spaces({"question": response})
+    print(response['text'])
+    output_flowise = query({"question": response['text']})
     if '```json' in output_flowise['text']:
         data = json.loads(output_flowise['text'][7:-3])
     else:
