@@ -202,13 +202,15 @@ async def handle_document(message: types.Message):
     await bot.download_file(input_file.file_path, input_file_path)
     await message.reply("Документ получен! Обрабатываю файл...")
     response = process_document(input_file_path)
-    print(response)
+    print(response, type(response))
     char_count, space_count = find_spaces(response)
     if (space_count * 100)/(char_count + space_count) >= 20:
         response.replace(' ', '')
         response = query_spaces({"question": response})
-    print(response['text'])
-    output_flowise = query({"question": response['text']})
+        print(response)
+        output_flowise = query({"question": response['text']})
+    else:
+        output_flowise = query({"question" : response})
     if '```json' in output_flowise['text']:
         data = json.loads(output_flowise['text'][7:-3])
     else:
