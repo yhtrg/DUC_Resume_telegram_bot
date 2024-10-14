@@ -203,14 +203,17 @@ async def handle_document(message: types.Message):
     await message.reply("Документ получен! Обрабатываю файл...")
     response = process_document(input_file_path)
     print(response, type(response))
-    char_count, space_count = find_spaces(response)
+    cleaned_response = response.replace('\n', ' ').replace('\r', '')
+    cleaned_response = cleaned_response.encode('unicode_escape').decode()
+    char_count, space_count = find_spaces(cleaned_response)
     if (space_count * 100)/(char_count + space_count) >= 20:
-        response.replace(' ', '')
-        response = query_spaces({"question": response})
-        print(response)
-        output_flowise = query({"question": response['text']})
+        cleaned_response.replace(' ', '')
+        cleaned_response = query_spaces({"question": cleaned_response})
+        print(cleaned_response)
+        output_flowise = query({"question": cleaned_response['text']})
     else:
-        output_flowise = query({"question" : response})
+        output_flowise = query({"question" : cleaned_response})
+    print(output_flowise)
     if '```json' in output_flowise['text']:
         data = json.loads(output_flowise['text'][7:-3])
     else:
