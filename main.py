@@ -10,7 +10,7 @@ from docx import Document as DocxDocument
 from aiogram.types.input_file import FSInputFile
 from docx.shared import Pt
 from striprtf.striprtf import rtf_to_text
-import PyPDF2
+from pypdf import PdfReader
 from spire.doc import *
 from spire.doc.common import *
 
@@ -162,10 +162,9 @@ async def start_command(message: types.Message):
 def process_document(file_path):
     response = ''
     if '.pdf' in file_path:
-        with open(file_path, 'rb') as file:
-            reader = PyPDF2.PdfReader(file)
-            for page in reader.pages:
-                response += page.extract_text() + '\n'
+        reader = PdfReader(file_path)
+        for page in reader.pages:
+            response += page.extract_text() + '\n'
 
     elif '.docx' in file_path:
         doc = DocxDocument(file_path)
