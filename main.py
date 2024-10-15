@@ -21,6 +21,7 @@ encoding = 'UTF-8'
 API_URL = "http://178.212.132.7:3003/api/v1/prediction/914536a7-cb64-4504-afab-4d09c557e524"
 API_URL_SPACES = "http://178.212.132.7:3003/api/v1/prediction/3a8b3a53-84b6-4551-8127-7162ca12cb64"
 TOKEN = '7096081921:AAHX23mpdT1pe4yZJfzBxnNM10xroSkB8HI'
+#TOKEN = '7266662655:AAG5CUk3OSiylrlM6QfD_XiL4yeGB7o8AjQ'
 DOWNLOAD_FOLDER = 'downloads'
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
@@ -199,29 +200,31 @@ async def handle_document(message: types.Message):
     input_file_path = os.path.join(DOWNLOAD_FOLDER, input_file_name)
     input_file_id = input_document.file_id
     input_file = await bot.get_file(input_file_id)
+
     await bot.download_file(input_file.file_path, input_file_path)
     await message.reply("Документ получен! Обрабатываю файл...")
+
     response = process_document(input_file_path)
-    print(response, type(response))
-    cleaned_response = response.replace('\n', ' ').replace('\r', '')
-    cleaned_response = cleaned_response.encode('unicode_escape').decode()
+    cleaned_response = repr(response.replace('\n', ' ').replace('\r', ''))
+    print(cleaned_response, type(cleaned_response))
     char_count, space_count = find_spaces(cleaned_response)
     if (space_count * 100)/(char_count + space_count) >= 20:
         cleaned_response.replace(' ', '')
         cleaned_response = query_spaces({"question": cleaned_response})
-        print(cleaned_response)
         output_flowise = query({"question": cleaned_response['text']})
     else:
         output_flowise = query({"question" : cleaned_response})
-    print(output_flowise)
+        
     if '```json' in output_flowise['text']:
         data = json.loads(output_flowise['text'][7:-3])
     else:
         data = json.loads(output_flowise['text'])
     print(data)
+
     output_file_name = download_word(data)
     output_document = FSInputFile(f'downloads/{output_file_name}')
     await bot.send_document(user_id, output_document)
+    
     os.remove(os.path.join(DOWNLOAD_FOLDER, input_file_name))
     os.remove(os.path.join(DOWNLOAD_FOLDER, output_file_name))
 
