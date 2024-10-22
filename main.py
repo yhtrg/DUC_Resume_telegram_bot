@@ -20,8 +20,8 @@ logging.basicConfig(level=logging.INFO)
 encoding = 'UTF-8'
 API_URL = "http://178.212.132.7:3003/api/v1/prediction/914536a7-cb64-4504-afab-4d09c557e524"
 API_URL_SPACES = "http://178.212.132.7:3003/api/v1/prediction/3a8b3a53-84b6-4551-8127-7162ca12cb64"
-#TOKEN = '7096081921:AAHX23mpdT1pe4yZJfzBxnNM10xroSkB8HI'
-TOKEN = '7266662655:AAG5CUk3OSiylrlM6QfD_XiL4yeGB7o8AjQ'
+TOKEN = '7096081921:AAHX23mpdT1pe4yZJfzBxnNM10xroSkB8HI'
+#TOKEN = '7266662655:AAG5CUk3OSiylrlM6QfD_XiL4yeGB7o8AjQ'
 DOWNLOAD_FOLDER = 'downloads'
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
