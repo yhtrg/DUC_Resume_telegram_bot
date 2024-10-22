@@ -20,8 +20,8 @@ logging.basicConfig(level=logging.INFO)
 encoding = 'UTF-8'
 API_URL = "http://178.212.132.7:3003/api/v1/prediction/914536a7-cb64-4504-afab-4d09c557e524"
 API_URL_SPACES = "http://178.212.132.7:3003/api/v1/prediction/3a8b3a53-84b6-4551-8127-7162ca12cb64"
-TOKEN = '7096081921:AAHX23mpdT1pe4yZJfzBxnNM10xroSkB8HI'
-#TOKEN = '7266662655:AAG5CUk3OSiylrlM6QfD_XiL4yeGB7o8AjQ'
+#TOKEN = '7096081921:AAHX23mpdT1pe4yZJfzBxnNM10xroSkB8HI'
+TOKEN = '7266662655:AAG5CUk3OSiylrlM6QfD_XiL4yeGB7o8AjQ'
 DOWNLOAD_FOLDER = 'downloads'
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
@@ -109,13 +109,14 @@ def download_word(data):
             for experience in data['work_experience']:
                 row_cells = table.add_row().cells
                 row_cells[0].text = f"{experience['start_date']} - {experience['end_date']}"
-                if isinstance(experience['function'], list):
-                    functions = ''
-                    for func in experience['function']:
-                        functions += f'\n{func}'
-                    row_cells[1].text = f"{experience['current_position']}\n{functions}"
-                elif isinstance(experience['function'], str):
-                    row_cells[1].text = f"{experience['current_position']}\n\n{experience['function']}"
+                if 'function' in experience:
+                    if isinstance(experience['function'], list):
+                        functions = ''
+                        for func in experience['function']:
+                            functions += f'\n{func}'
+                        row_cells[1].text = f"{experience['current_position']}\n{functions}"
+                    elif isinstance(experience['function'], str):
+                        row_cells[1].text = f"{experience['current_position']}\n\n{experience['function']}"
                 
             for row in table.rows:
                 for cell in row.cells:
