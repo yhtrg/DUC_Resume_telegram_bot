@@ -214,9 +214,12 @@ async def handle_document(message: types.Message):
         output_flowise = query({"question": cleaned_response['text']})
     else:
         output_flowise = query({"question" : cleaned_response})
-        
+    
     if '```json' in output_flowise['text']:
-        data = json.loads(output_flowise['text'][7:-3])
+        try:
+            data = json.loads(output_flowise['text'][7:-3])
+        except:
+            data = json.loads(output_flowise['text'][7:-4])
     else:
         data = json.loads(output_flowise['text'])
     print(data)
