@@ -13,6 +13,7 @@ from striprtf.striprtf import rtf_to_text
 from pypdf import PdfReader
 from spire.doc import *
 from spire.doc.common import *
+from docxtpl import DocxTemplate
 
 
 logging.basicConfig(level=logging.INFO)
@@ -43,117 +44,17 @@ def find_spaces(text):
     return char_count, space_count
 
 def download_word(data):
-    doc = DocxDocument('resume.docx')
-
-    for paragraph in doc.paragraphs:
-        if '[Имя Фамилия]' in paragraph.text:
-            run = paragraph.runs[0]
-            run.text = run.text.replace('[Имя Фамилия]', data["name"])
-            run.font.size = Pt(22)
-            run.font.name = 'Times New Roman'
-            run.bold = True
-
-        if '[Должность]' in paragraph.text:
-            run = paragraph.runs[0]
-            run.text = run.text.replace('[Должность]', data['position'])
-            run.font.size = Pt(14)
-            run.font.name = 'Times New Roman'
-            run.bold = True
-
-        if 'Пол:' in paragraph.text:
-            run = paragraph.runs[0]
-            run = paragraph.add_run(f" {data['gender']}")
-            run.font.size = Pt(12)
-            run.font.name = 'Times New Roman'
-
-        if 'Возраст:' in paragraph.text:
-            run = paragraph.runs[0]
-            run = paragraph.add_run(f' {data["age"]}')
-            run.font.size = Pt(12)
-            run.font.name = 'Times New Roman'
-
-        if '[Город проживания]' in paragraph.text:
-            run = paragraph.runs[0]
-            if data['city']:
-                run.text = run.text.replace('[Город проживания]', data['city'])
-            else:
-                run.text = run.text.replace('[Город проживания]', '')
-                run.text = run.text.replace('Проживает: г.', '')
-            run.font.size = Pt(12)
-            run.font.name = 'Times New Roman'
-
-        if '[Список технологий]' in paragraph.text:
-            run = paragraph.runs[0]
-            tech_stack = ''
-            current_tech_stack = 1
-            for stack in data['tech_stack']:
-                tech_stack_len = len(data['tech_stack'])
-                if current_tech_stack != tech_stack_len:
-                    tech_stack += f'{stack}, '
-                    current_tech_stack += 1
-                else:
-                    tech_stack += f'{stack}.'
-            run.text = run.text.replace('[Список технологий]', tech_stack)
-            run.font.size = Pt(12)
-            run.font.name = 'Times New Roman'
-
-        if '[Количество лет и месяцев]' in paragraph.text:
-            run = paragraph.runs[0]
-            run.text = run.text.replace('[Количество лет и месяцев]', data['all_work_experience'])
-            run.font.size = Pt(14)
-            run.font.name = 'Times New Roman'
-            run.bold = True
-
-            table = doc.add_table(rows=0, cols=2)
-            table.style = 'Table Grid'
-            for experience in data['work_experience']:
-                row_cells = table.add_row().cells
-                row_cells[0].text = f"{experience['start_date']} - {experience['end_date']}"
-                if 'function' in experience:
-                    if isinstance(experience['function'], list):
-                        functions = ''
-                        for func in experience['function']:
-                            functions += f'\n{func}'
-                        row_cells[1].text = f"{experience['current_position']}\n{functions}"
-                    elif isinstance(experience['function'], str):
-                        row_cells[1].text = f"{experience['current_position']}\n\n{experience['function']}"
+    tpl = DocxTemplate('resume.docx')
+    
+    for key, value in data.items():
+        if key == 'name':
+            file_name = f"{value.replace(' ', '_')}_Резюме.docx"
+            break
+        else:
+            file_name = 'Резюме.docx'
                 
-            for row in table.rows:
-                for cell in row.cells:
-                    paragraphs = cell.paragraphs
-                    for paragraph in paragraphs:
-                        for run in paragraph.runs:
-                            font = run.font
-                            font.size= Pt(12)
-                            font.name = 'Times New Roman'
-
-
-        if 'Образование' in paragraph.text:
-            run = paragraph.runs[0]
-            for edu in data['education']:
-                if edu['university'] is None:
-                    edu['university'] = '[Университет]'
-                if edu['faculty'] is None:
-                    edu['faculty'] = '[Факультет]'
-                if edu['specialty'] is None:
-                    edu['specialty'] = '[Специальность]'
-                run = paragraph.add_run(f"\n- {edu['year']}, {edu['university']}, {edu['faculty']}, {edu['specialty']};")
-                run.font.size = Pt(12)
-                run.font.name = 'Times New Roman'
-
-        if '[Информация о себе]' in paragraph.text:
-            run = paragraph.runs[0]
-            if data["about"]:
-                run.text = run.text.replace('[Информация о себе]', data["about"])
-            else:
-                run.text = run.text.replace('[Информация о себе]', '')
-                run.text = run.text.replace('О себе:', '')
-            run.font.size = Pt(12)
-            run.font.name = 'Times New Roman'
-
-    file_name = f"{data['name'].replace(' ', '_')}_Резюме.docx"
-    file_path = os.path.join(DOWNLOAD_FOLDER, file_name)
-    doc.save(file_path)
+    tpl.render(data)
+    tpl.save(os.path.join(DOWNLOAD_FOLDER, file_name))
     return file_name
 
 @dp.message(CommandStart())
